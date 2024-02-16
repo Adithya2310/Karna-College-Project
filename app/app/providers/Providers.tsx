@@ -16,8 +16,8 @@ export function Providers({ children }:{ children: React.ReactNode }) {
                 chains={chains}
                 theme={{
                     lightMode: lightTheme({
-                        accentColor: "#ff77e1",
-                        accentColorForeground: "#1A1B1F",
+                        accentColor: "#000000",
+                        accentColorForeground: "#D9D9D9",
                         borderRadius: "small",
                         overlayBlur: "small",
                     }),

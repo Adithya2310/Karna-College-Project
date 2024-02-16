@@ -15,26 +15,66 @@ import { Check, ChevronDown } from "lucide-react";
 // import { GetTransactionProvider } from "@/helpers/wallet/GetTransactionProvider";
 // import { addListing } from "@/actions/addListing";
 import { ethers } from "ethers";
+import { usePathname } from "next/navigation";
 
 export const Navbar = () => {
     const { openConnectModal } = useConnectModal();
     const { address, isConnected } = useAccount();
-  
+    const pathname=usePathname();
+    const [selected,setSelected]=useState(()=>{
+        if(pathname==="/"){
+          return "home"
+        }
+        if(pathname.includes("/donate")){
+          return "donate"
+        }
+        if(pathname.includes("/contact")){
+          return "contact"
+        }
+        if(pathname.includes("/about")){
+          return "about"
+        }
+    });
     return (
-    <NavContainer>
-        <div className=" font-bold text-2xl">Karna</div>
+    <NavContainer className=" max-w-10xl mx-auto ">
+        <div className="flex gap-16 items-center">
+          <h1 className="font-bold text-2xl text-uiprimary">Karna</h1>
+          <ul className=" flex gap-8 tracking-wider">
+            <Link href={"/"}>
+            <li className={` hover:text-uiprimary text-base ${selected==="home"&&"text-uiprimary"}`} onClick={()=>setSelected("home")}>Home</li>
+            </Link>
+            <Link href={"/donate"}>
+            <li className={` hover:text-uiprimary text-base ${selected==="donate"&&"text-uiprimary"}`} onClick={()=>setSelected("donate")}>Donate</li>
+            </Link>
+            <Link href={"/contact"}>
+            <li className={` hover:text-uiprimary text-base ${selected==="contact"&&"text-uiprimary"}`} onClick={()=>setSelected("contact")}>Contact Us</li>
+            </Link>
+            <Link href={"/about"}>
+            <li className={` hover:text-uiprimary text-base ${selected==="about"&&"text-uiprimary"}`} onClick={()=>setSelected("about")}>
+              About
+            </li>
+            </Link>
+        </ul>
+        </div>
         <div className="flex gap-5 my-auto h-full">
           {isConnected && (
             <div className=" text-black"> already connected</div>
           )}
-          {!isConnected && (
+          {!isConnected ? (
             <Button
-              className="py-4 px-4 rounded-[5px] text-white transition-opacity duration-300"
+            variant={"primary"}
+              className="py-4 px-4 rounded-[5px] text-white font-bold  text-base transition-opacity duration-300 "
               onClick={openConnectModal}
             >
-              Post for rent
+              Start a Fundraise
             </Button>
-          )}
+          ):<Button
+          className="py-4 px-4 rounded-[5px] text-white font-bold  text-base transition-opacity duration-300"
+          onClick={openConnectModal}
+          variant={"primary"}
+        >
+          Start a Fundraise
+        </Button>}
           <ConnectButton chainStatus="icon" showBalance={false} />
         </div>
         </NavContainer>
