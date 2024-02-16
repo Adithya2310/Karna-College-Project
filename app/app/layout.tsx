@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers/Providers";
 import { Navbar } from "@/components/shared/navbar/Navbar";
-
+import { FundRaiseContextProvider } from "@/lib/context/FundraiseContext";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -20,9 +20,11 @@ export default function RootLayout({
     <html lang="en">
       <body suppressHydrationWarning={true} className={inter.className}>
         <Providers>
-          <Navbar />
+        <FundRaiseContextProvider>
+        <Navbar />
           {children}
           {/* <Toaster /> */}
+        </FundRaiseContextProvider>
         </Providers>
       </body>
     </html>

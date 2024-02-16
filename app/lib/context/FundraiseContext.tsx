@@ -1,36 +1,40 @@
 
 "use client"
 import React, { createContext, useContext, useState } from 'react';
-
+import { FundRaiseProps } from '../types';
 
 // context type
-interface UserContextType {
+interface FundRaiseContextType {
+    storeInitialFundDetails: (ProductData:FundRaiseProps) => void;
 }
 
 
 // Creating the context with an initial value
-const UserContext = createContext<UserContextType | undefined>(undefined);
+const FundRaiseContext = createContext<FundRaiseContextType | undefined>(undefined);
 
 
 
 // Create a context provider component
-interface UserContextProviderProps {
+interface FundRaiseContextProviderProps {
   children: React.ReactNode;
 }
 
 
 // provider for the user context
-export const UserContextProvider: React.FC<UserContextProviderProps> = ({ children }) => {
+export const FundRaiseContextProvider: React.FC<FundRaiseContextProviderProps> = ({ children }) => {
+    const storeInitialFundDetails=(ProductData:FundRaiseProps)=>{
+        console.log("got products in context",ProductData);
+      }
   // add all the function here
-  return <UserContext.Provider value={{}}>{children}</UserContext.Provider>;
+  return <FundRaiseContext.Provider value={{storeInitialFundDetails}}>{children}</FundRaiseContext.Provider>;
 };
 
 
 // custom hook for accessing the user context 
-export const useUserContext = () => {
-  const context = useContext(UserContext);
+export const useFundRaiseContext = () => {
+  const context = useContext(FundRaiseContext);
   if (!context) {
-    throw new Error('useUserContext must be used within a UserContextProvider');
+    throw new Error('useFundRaiseContext must be used within a FundRaiseContextProvider');
   }
   return context;
 };

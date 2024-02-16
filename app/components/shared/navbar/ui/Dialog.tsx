@@ -16,12 +16,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useState } from "react";
 import { FundRaiseProps } from "@/lib/types";
+import { useFundRaiseContext } from "@/lib/context/FundraiseContext";
 
 export function CreateDialog() {
+  const {storeInitialFundDetails}=useFundRaiseContext();
   const [form, setForm]= useState<FundRaiseProps>({
     name:'',
     email:'',
-    type: '',
+    type: 'Campaign',
     amount: 0,
     description: ''
   });
@@ -31,6 +33,17 @@ export function CreateDialog() {
       [e.target.name]:e.target.value
     });
   }
+  const handleRadioChange=(type:string)=>{
+    setForm({
+      ...form,
+      type:type
+    });
+    }
+    const handleSubmit=(e:React.FormEvent)=>{
+      e.preventDefault();
+      console.log("Form Submitted",form);
+      storeInitialFundDetails(form);
+    }
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -48,7 +61,7 @@ export function CreateDialog() {
             You can either create a campaign or request directly from the DAO
           </DialogDescription>
         </DialogHeader>
-        <form className=" flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className=" flex flex-col gap-4">
         <div className="grid w-full max-w-sm items-center gap-1.5">
           <Label htmlFor="email">Email</Label>
           <Input type="email" id="email" placeholder="Enter Your Email" name="email" value={form.email} onChange={handleChange}/>
@@ -59,12 +72,12 @@ export function CreateDialog() {
         </div>
         <div className="grid w-full max-w-sm items-center gap-1.5 mt-2">
         <Label htmlFor="radio">Select the type of Fundraise</Label>
-        <RadioGroup defaultValue="campaign" className=" w-full flex gap-12 my-3">
-          <div className="flex items-center space-x-2">
+        <RadioGroup defaultValue="campaign" className=" w-full flex gap-12 my-3" onValueChange={handleRadioChange}>
+          <div className="flex items-center space-x-2 w-fit" >
             <RadioGroupItem value="Campaign" id="campaign" />
             <Label htmlFor="campaign">Campaign</Label>
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 w-fit">
             <RadioGroupItem value="Request" id="request" />
             <Label htmlFor="request">Request</Label>
           </div>
@@ -78,14 +91,14 @@ export function CreateDialog() {
           <Label htmlFor="description">Description</Label>
           <Textarea id="description" placeholder="Please enter your story here" name="description" value={form.description} onChange={handleChange}/>
         </div>
-        </form>
         <DialogFooter className="flex justify-end w-full">
           <DialogClose className=" w-fit" asChild>
-            <Button type="button" variant="primary">
+            <Button type="submit" variant="primary">
               Send Request 
             </Button>
           </DialogClose>
         </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   )
