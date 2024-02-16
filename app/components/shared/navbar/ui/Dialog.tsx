@@ -1,5 +1,5 @@
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -9,12 +9,28 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useState } from "react";
+import { FundRaiseProps } from "@/lib/types";
+
 export function CreateDialog() {
+  const [form, setForm]= useState<FundRaiseProps>({
+    name:'',
+    email:'',
+    type: '',
+    amount: 0,
+    description: ''
+  });
+  const handleChange=(e:React.ChangeEvent<HTMLInputElement|HTMLTextAreaElement>)=>{
+    setForm({
+      ...form,
+      [e.target.name]:e.target.value
+    });
+  }
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -35,11 +51,11 @@ export function CreateDialog() {
         <form className=" flex flex-col gap-4">
         <div className="grid w-full max-w-sm items-center gap-1.5">
           <Label htmlFor="email">Email</Label>
-          <Input type="email" id="email" placeholder="Enter Your Email" />
+          <Input type="email" id="email" placeholder="Enter Your Email" name="email" value={form.email} onChange={handleChange}/>
         </div>
         <div className="grid w-full max-w-sm items-center gap-1.5">
           <Label htmlFor="name">Name</Label>
-          <Input type="name" id="name" placeholder="Enter Your Name" />
+          <Input type="name" id="name" placeholder="Enter Your Name" name="name" value={form.name} onChange={handleChange}/>
         </div>
         <div className="grid w-full max-w-sm items-center gap-1.5 mt-2">
         <Label htmlFor="radio">Select the type of Fundraise</Label>
@@ -56,11 +72,11 @@ export function CreateDialog() {
         </div>
         <div className="grid w-full max-w-sm items-center gap-1.5">
           <Label htmlFor="amount">Amount</Label>
-          <Input type="number" id="amount" placeholder="Enter In BNB" />
+          <Input type="number" id="amount" placeholder="Enter In BNB" name="amount" value={form.amount} onChange={handleChange}/>
         </div>
         <div className="grid w-full max-w-sm items-center gap-1.5">
           <Label htmlFor="description">Description</Label>
-          <Textarea id="description" placeholder="Please enter your story here" />
+          <Textarea id="description" placeholder="Please enter your story here" name="description" value={form.description} onChange={handleChange}/>
         </div>
         </form>
         <DialogFooter className="flex justify-end w-full">
