@@ -7,6 +7,7 @@ import {
   filecoin,
   filecoinCalibration,
   baseGoerli,
+  bscTestnet
 } from "wagmi/chains";
 
 export const GetSupportedChainsForWagmi = () => {
@@ -14,6 +15,6 @@ export const GetSupportedChainsForWagmi = () => {
   if (process.env.NEXT_PUBLIC_ISPRODUCTION == "true") {
     return [arbitrumGoerli];
   } else {
-    return [devChain, arbitrumGoerli];
+    return [devChain, arbitrumGoerli,bscTestnet];
   }
 };

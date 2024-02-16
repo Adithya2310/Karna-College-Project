@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useConnectModal, useAccountModal, useChainModal } from "@rainbow-me/rainbowkit";
 import { NavContainer } from "@/containers/Containers";
-
 import Image from "next/image";
 // import { loadPropertyListing, setInitialPropertyListingsLoaded } from "@/store/slices/homeSlice";
 import { Check, ChevronDown } from "lucide-react";
@@ -16,6 +15,7 @@ import { Check, ChevronDown } from "lucide-react";
 // import { addListing } from "@/actions/addListing";
 import { ethers } from "ethers";
 import { usePathname } from "next/navigation";
+import { CreateDialog } from "./ui/Dialog";
 
 export const Navbar = () => {
     const { openConnectModal } = useConnectModal();
@@ -57,18 +57,7 @@ export const Navbar = () => {
         </ul>
         </div>
         <div className="flex gap-5 my-auto h-full">
-          {isConnected && (
-            <div className=" text-black"> already connected</div>
-          )}
-          {!isConnected ? (
-            <Button
-            variant={"primary"}
-              className="py-4 px-4 rounded-[5px] text-white font-bold  text-base transition-opacity duration-300 "
-              onClick={openConnectModal}
-            >
-              Start a Fundraise
-            </Button>
-          ):<Button
+          {isConnected ? (<CreateDialog/>):<Button
           className="py-4 px-4 rounded-[5px] text-white font-bold  text-base transition-opacity duration-300"
           onClick={openConnectModal}
           variant={"primary"}
