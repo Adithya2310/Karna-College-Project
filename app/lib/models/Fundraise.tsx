@@ -1,51 +1,37 @@
 import mongoose from "mongoose";
 
-const ProductSchema=new mongoose.Schema({
-    url:{
+const FundRaiseSchema=new mongoose.Schema({
+    name:{
         type:String,
         required:true
     },
-    title:{
+    email:{
         type:String,
         required:true
     },  
-    mrp:{
+    description:{
         type:String,
         required:true
     },
-    price:{
+    amount:{
+        type:Number,
+        required:true
+    },
+    type:{
         type:String,
         required:true
     },
-    image:{
-        type:String,
-        required:true
+    approved:{
+        type: Boolean,
+        required: true,
+        default: false
     },
-    priceArray:[
-        {
-            price:{type:String,required:true},
-            date:{type:Date,required:true, default:Date.now()}
-        }
-    ],
-    outOfStock:{
-        type:Boolean,
-        required:true,
-        default:false
-    },
-    lowestPrice:{
-        type:String,
-        required:true
-    },
-    highestPrice:{
-        type:String,
-        required:true
-    },
-    averagePrice:{
-        type:String,
-        required:true
+    createdAt:{
+        type:Date,
+        default:Date.now
     }
 })
 
-const Product=mongoose.models.Product||mongoose.model("Product",ProductSchema);
+const FundRaise=mongoose.models.FundRaise||mongoose.model("FundRaise",FundRaiseSchema);
 
-export default Product;
+export default FundRaise;

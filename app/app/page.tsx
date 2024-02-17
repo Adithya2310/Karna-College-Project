@@ -9,8 +9,8 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="bg-shadcn-black text-shadcn-white py-8 mt-5">
         <div className="container mx-auto text-center">
-          <h2 className="text-2xl font-bold mb-5 text-uiprimary">DERENT</h2>
-          <h1 className="text-4xl text-black font-extrabold mb-8">Creating a Hassle-Free Renting Experience</h1>
+          <h2 className="text-2xl font-bold mb-5 text-uiprimary">KARNA</h2>
+          <h1 className="text-4xl text-black font-extrabold mb-8">Decentralised crowdfunding platform with <br />DAO based verification.</h1>
           <div className="flex gap-2 text-lg justify-center mt-10 mb-7 bg-gray text-[#666362]">
             <div>
               <span className="text-shadcn-white flex justify-center items-center">
