@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
 
 const FundRaiseSchema=new mongoose.Schema({
+    title:{
+        type: String,
+        required: true
+    },
     name:{
         type:String,
         required:true
@@ -16,6 +20,10 @@ const FundRaiseSchema=new mongoose.Schema({
     amount:{
         type:Number,
         required:true
+    },
+    donatedAmount:{
+        type:Number,
+        default:0
     },
     type:{
         type:String,

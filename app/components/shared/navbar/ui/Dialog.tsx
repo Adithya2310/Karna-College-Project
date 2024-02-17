@@ -20,30 +20,36 @@ import { useFundRaiseContext } from "@/lib/context/FundraiseContext";
 
 export function CreateDialog() {
   const {storeInitialFundDetails}=useFundRaiseContext();
+
   const [form, setForm]= useState<FundRaiseProps>({
+    title:'',
     name:'',
     email:'',
     type: 'Campaign',
     amount: 0,
     description: ''
   });
+
   const handleChange=(e:React.ChangeEvent<HTMLInputElement|HTMLTextAreaElement>)=>{
     setForm({
       ...form,
       [e.target.name]:e.target.value
     });
   }
+
   const handleRadioChange=(type:string)=>{
     setForm({
       ...form,
       type:type
     });
-    }
-    const handleSubmit=(e:React.FormEvent)=>{
-      e.preventDefault();
-      console.log("Form Submitted",form);
-      storeInitialFundDetails(form);
-    }
+  }
+
+  const handleSubmit=(e:React.FormEvent)=>{
+    e.preventDefault();
+    console.log("Form Submitted",form);
+    storeInitialFundDetails(form);
+  }
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -62,6 +68,10 @@ export function CreateDialog() {
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className=" flex flex-col gap-4">
+        <div className="grid w-full max-w-sm items-center gap-1.5">
+          <Label htmlFor="title">Title</Label>
+          <Input type="text" id="title" placeholder="Enter Title For Your Fundraise" name="title" value={form.title} onChange={handleChange}/>
+        </div>
         <div className="grid w-full max-w-sm items-center gap-1.5">
           <Label htmlFor="email">Email</Label>
           <Input type="email" id="email" placeholder="Enter Your Email" name="email" value={form.email} onChange={handleChange}/>
