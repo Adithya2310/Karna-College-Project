@@ -7,6 +7,7 @@ import axios from 'axios';
 
 // context type
 interface FundRaiseContextType {
+    daoMembers: string[];
     storeInitialFundDetails: (ProductData:FundRaiseProps) => void;
     fundRaiseDetails: CampaignCardProps[];
     setFundRaiseDetails: React.Dispatch<React.SetStateAction<CampaignCardProps[]>>;
@@ -24,10 +25,13 @@ interface FundRaiseContextProviderProps {
 
 // provider for the user context
 export const FundRaiseContextProvider: React.FC<FundRaiseContextProviderProps> = ({ children }) => {
+  // to store all the dao members
+  const [daoMembers, setDaoMembers] = useState<string[]>([]);
   // to store all the funds from the database
   const [fundRaiseDetails, setFundRaiseDetails] = useState<CampaignCardProps[]>([]);
   const url=process.env.NEXT_PUBLIC_URL;
   useEffect(()=>{
+    getAllDaoMembers();
     getAllFundRaise();
   },[])
   // a function to get all the fund details from the database
@@ -41,6 +45,15 @@ export const FundRaiseContextProvider: React.FC<FundRaiseContextProviderProps> =
     }
   }
 
+  // a fucntion to get the list of dao members from the databse
+  const getAllDaoMembers=async ()=>{
+    try {
+      setDaoMembers(["0x60FFC21291D8b169737c40067F0DfeeF4fFD8BF7"]);
+    } catch (error) {
+      console.log("some error occured", error);
+      
+    }
+  }
   // a function to store the initial fund details
   const storeInitialFundDetails=(ProductData:FundRaiseProps)=>{
       console.log("got products in context",ProductData);
@@ -58,7 +71,7 @@ export const FundRaiseContextProvider: React.FC<FundRaiseContextProviderProps> =
     console.log("DONATE TO THE CAMPAIGN INITIATED",amount,id);
   }
   // add all the function here
-  return <FundRaiseContext.Provider value={{storeInitialFundDetails, fundRaiseDetails, setFundRaiseDetails, donateToOrganisation,donateToCampaign}}>{children}</FundRaiseContext.Provider>;
+  return <FundRaiseContext.Provider value={{storeInitialFundDetails, daoMembers, fundRaiseDetails, setFundRaiseDetails, donateToOrganisation,donateToCampaign}}>{children}</FundRaiseContext.Provider>;
 };
 
 // custom hook for accessing the user context 

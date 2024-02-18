@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount, useProvider } from "wagmi";
@@ -16,10 +16,13 @@ import { Check, ChevronDown } from "lucide-react";
 import { ethers } from "ethers";
 import { usePathname } from "next/navigation";
 import { CreateDialog } from "./ui/Dialog";
+import { useFundRaiseContext } from "@/lib/context/FundraiseContext";
 
 export const Navbar = () => {
+    const {daoMembers}=useFundRaiseContext();
     const { openConnectModal } = useConnectModal();
     const { address, isConnected } = useAccount();
+    console.log("the address in navbar");
     const pathname=usePathname();
     const [selected,setSelected]=useState(()=>{
         if(pathname==="/"){
@@ -57,13 +60,14 @@ export const Navbar = () => {
         </ul>
         </div>
         <div className="flex gap-5 my-auto h-full">
-          {isConnected ? (<CreateDialog/>):<Button
+          {address ? (daoMembers.includes(address.toString())?<Link href={"/dao"}><Button className="py-4 px-4 rounded-[5px] text-white font-bold  
+          text-base transition-opacity duration-300">Dao Dashboard</Button></Link>:<CreateDialog/>):(<Button
           className="py-4 px-4 rounded-[5px] text-white font-bold  text-base transition-opacity duration-300"
           onClick={openConnectModal}
           variant={"primary"}
         >
           Start a Fundraise
-        </Button>}
+        </Button>)}
           <ConnectButton chainStatus="icon" showBalance={false} />
         </div>
         </NavContainer>
