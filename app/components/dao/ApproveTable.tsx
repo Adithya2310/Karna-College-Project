@@ -8,12 +8,16 @@ import {
     TableHeader,
     TableRow,
   } from "@/components/ui/table"
-import { FC } from "react";
+import { FC, use } from "react";
 import { CampaignCardProps } from "@/lib/types";
 import { Button } from "../ui/button";
-
+import { useDaoContext } from "@/lib/context/DaoContext";
 const ApproveTable:FC<{data:CampaignCardProps[]}> = ({data}) => {
+  const {approveCampiagn}=useDaoContext();
   console.log("table data to be displayed",data);
+  const handleClick=()=>{
+    approveCampiagn(1);
+  }
   return (
     <Table>
       <TableCaption>{data.length!==0?`list of all the ${data[0].type} yet to be approved`:'Nothing to display here'}</TableCaption>
@@ -33,7 +37,7 @@ const ApproveTable:FC<{data:CampaignCardProps[]}> = ({data}) => {
                 <TableCell className="font-medium">{data.title}</TableCell>
                 <TableCell>{data.amount}</TableCell>
                 <TableCell>{data.description}</TableCell>
-                <TableCell className="text-right"><Button>Approve</Button></TableCell>
+                <TableCell className="text-right"><Button onClick={handleClick}>Approve</Button></TableCell>
               </TableRow>
             ))}
           </TableBody>

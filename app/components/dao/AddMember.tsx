@@ -11,15 +11,18 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useState } from "react"
+import { use, useState } from "react"
+import { useDaoContext } from "@/lib/context/DaoContext"
 
 const AddMember = () => {
+  const {addMembers}=useDaoContext();
     const [address,setAddress]=useState<string>("");
     const handleChange=(e:React.ChangeEvent<HTMLInputElement>)=>{
         setAddress(e.target.value);
     }
     const handleSubmit=()=>{
         console.log("add member to the dao",address);
+        addMembers(address);
     }
   return (
     <Dialog>

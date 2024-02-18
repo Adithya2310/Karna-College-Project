@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "./providers/Providers";
 import { Navbar } from "@/components/shared/navbar/Navbar";
 import { FundRaiseContextProvider } from "@/lib/context/FundraiseContext";
+import { DaoContextProvider } from "@/lib/context/DaoContext";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -20,11 +21,13 @@ export default function RootLayout({
     <html lang="en">
       <body suppressHydrationWarning={true} className={inter.className}>
         <Providers>
-        <FundRaiseContextProvider>
-        <Navbar />
-          {children}
-          {/* <Toaster /> */}
-        </FundRaiseContextProvider>
+          <DaoContextProvider>
+            <FundRaiseContextProvider>
+            <Navbar />
+              {children}
+              {/* <Toaster /> */}
+            </FundRaiseContextProvider>
+          </DaoContextProvider>
         </Providers>
       </body>
     </html>

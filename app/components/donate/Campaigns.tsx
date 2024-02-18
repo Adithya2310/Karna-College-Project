@@ -13,6 +13,7 @@ const Campaigns = () => {
         Support a FundRaise today by donating 
       </p>
     </div>
+    <div className=" grid grid-cols-1 md:grid-cols-3 mx-auto">
     {
       fundRaiseDetails.map((fund, index)=>{
         return <CampaignCard
@@ -20,6 +21,7 @@ const Campaigns = () => {
           {...fund}/>
       })
     }
+    </div>
     </>
 
   )
