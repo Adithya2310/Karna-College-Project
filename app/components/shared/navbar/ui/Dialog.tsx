@@ -64,7 +64,7 @@ export function CreateDialog() {
         <DialogHeader>
           <DialogTitle>Start a Fundraise</DialogTitle>
           <DialogDescription>
-            You can either create a campaign or request directly from the DAO
+            All the Campaigns and Requests need to be approved from the DAO before they are live
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className=" flex flex-col gap-4">

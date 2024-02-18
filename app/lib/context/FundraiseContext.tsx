@@ -48,7 +48,7 @@ export const FundRaiseContextProvider: React.FC<FundRaiseContextProviderProps> =
   // a fucntion to get the list of dao members from the databse
   const getAllDaoMembers=async ()=>{
     try {
-      setDaoMembers(["0x60FFC21291D8b169737c40067F0DfeeF4fFD8BF7"]);
+      setDaoMembers([]);
     } catch (error) {
       console.log("some error occured", error);
       
