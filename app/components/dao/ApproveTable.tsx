@@ -18,8 +18,8 @@ const ApproveTable:FC<{data:CampaignCardProps[]}> = ({data}) => {
   const {approveCampiagn}=useDaoContext();
   const signer=GetTransactionProvider();
   console.log("table data to be displayed",data);
-  const handleClick=()=>{
-    approveCampiagn(signer,1);
+  const handleClick=(id:number)=>{
+    approveCampiagn(signer,id);
   }
   return (
     <Table>
@@ -40,7 +40,7 @@ const ApproveTable:FC<{data:CampaignCardProps[]}> = ({data}) => {
                 <TableCell className="font-medium">{data.title}</TableCell>
                 <TableCell>{data.amount}</TableCell>
                 <TableCell>{data.description}</TableCell>
-                <TableCell className="text-right"><Button onClick={handleClick}>Approve</Button></TableCell>
+                <TableCell className="text-right"><Button onClick={()=>handleClick(data.proposalId)}>Approve</Button></TableCell>
               </TableRow>
             ))}
           </TableBody>
