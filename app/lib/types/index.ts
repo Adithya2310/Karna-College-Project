@@ -1,5 +1,5 @@
 
-export type FundRaiseProps={
+export type AddFundRaiseProps={
     title: string;
     name:string;
     email:string;
@@ -8,7 +8,12 @@ export type FundRaiseProps={
     description: string
 }
 
+export type FundRaiseProps=AddFundRaiseProps&{
+        proposalId:number
+}
+
 export type CampaignCardProps={
+    proposalId: number;
     title: string;
     name: string;
     email: string;

@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
 
 const FundRaiseSchema=new mongoose.Schema({
+    proposalId:{
+        type:Number,
+        required:true
+    },
     title:{
         type: String,
         required: true

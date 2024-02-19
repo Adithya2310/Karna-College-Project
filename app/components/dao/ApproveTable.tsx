@@ -12,11 +12,14 @@ import { FC, use } from "react";
 import { CampaignCardProps } from "@/lib/types";
 import { Button } from "../ui/button";
 import { useDaoContext } from "@/lib/context/DaoContext";
+import { GetTransactionProvider } from "@/helpers/wallet/GetTransactionProvider";
+
 const ApproveTable:FC<{data:CampaignCardProps[]}> = ({data}) => {
   const {approveCampiagn}=useDaoContext();
+  const signer=GetTransactionProvider();
   console.log("table data to be displayed",data);
   const handleClick=()=>{
-    approveCampiagn(1);
+    approveCampiagn(signer,1);
   }
   return (
     <Table>

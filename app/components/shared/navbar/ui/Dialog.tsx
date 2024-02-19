@@ -15,13 +15,14 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useState } from "react";
-import { FundRaiseProps } from "@/lib/types";
+import { AddFundRaiseProps } from "@/lib/types";
 import { useFundRaiseContext } from "@/lib/context/FundraiseContext";
+import { GetTransactionProvider } from "@/helpers/wallet/GetTransactionProvider";
 
 export function CreateDialog() {
   const {storeInitialFundDetails}=useFundRaiseContext();
-
-  const [form, setForm]= useState<FundRaiseProps>({
+  const signer=GetTransactionProvider();
+  const [form, setForm]= useState<AddFundRaiseProps>({
     title:'',
     name:'',
     email:'',
@@ -47,7 +48,7 @@ export function CreateDialog() {
   const handleSubmit=(e:React.FormEvent)=>{
     e.preventDefault();
     console.log("Form Submitted",form);
-    storeInitialFundDetails(form);
+    storeInitialFundDetails(signer,form);
   }
 
   return (

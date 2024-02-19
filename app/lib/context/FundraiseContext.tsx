@@ -1,14 +1,16 @@
 
 "use client"
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { FundRaiseProps, CampaignCardProps } from '../types';
+import { FundRaiseProps, CampaignCardProps, AddFundRaiseProps } from '../types';
 import { storeFundDetails, getAllFundRaise } from '../server/Actions';
 import axios from 'axios';
+import { CommonKarnaContractSetup } from '@/helpers/commonSetup/CommonActionSetup';
+import { ethers } from 'ethers';
 
 // context type
 interface FundRaiseContextType {
     daoMembers: string[];
-    storeInitialFundDetails: (ProductData:FundRaiseProps) => void;
+    storeInitialFundDetails: (signer:any,ProductData:AddFundRaiseProps) => void;
     fundRaiseDetails: CampaignCardProps[];
     setFundRaiseDetails: React.Dispatch<React.SetStateAction<CampaignCardProps[]>>;
     donateToOrganisation: (amount: number)=>void;
@@ -33,7 +35,8 @@ export const FundRaiseContextProvider: React.FC<FundRaiseContextProviderProps> =
   useEffect(()=>{
     getAllDaoMembers();
     getAllFundRaise();
-  },[])
+  },[]);
+
   // a function to get all the fund details from the database
   const getAllFundRaise=async ()=>{
     try {
@@ -54,22 +57,34 @@ export const FundRaiseContextProvider: React.FC<FundRaiseContextProviderProps> =
       
     }
   }
+
   // a function to store the initial fund details
-  const storeInitialFundDetails=(ProductData:FundRaiseProps)=>{
+  const storeInitialFundDetails=async (signer:any,ProductData:AddFundRaiseProps)=>{
+    try {
       console.log("got products in context",ProductData);
-      storeFundDetails(ProductData);
+      const karna_contract=await CommonKarnaContractSetup(signer);
+      console.log("contract from the setup",karna_contract);
+      const tx=await karna_contract?.createProposal(ProductData.title,ethers.utils.parseEther(ProductData.amount.toString()));
+      const respose=await tx.wait();
+      let proposalId=parseInt(respose.events[0].data);
+      console.log("the proposal id is",proposalId);
+      const newProductData:FundRaiseProps={proposalId,...ProductData};
+      storeFundDetails(newProductData); 
+    } catch (error) {
+      console.log("error in the transaction", error);
+    }
   }
 
   // a function to donate to the organisation
   const donateToOrganisation=(amount:number)=>{
     console.log("DONATE TO THE ORGANISATION INITIATED",amount);
-    
   }
 
   // to donate to a campaign
   const donateToCampaign=(amount:number, id:number)=>{
     console.log("DONATE TO THE CAMPAIGN INITIATED",amount,id);
   }
+
   // add all the function here
   return <FundRaiseContext.Provider value={{storeInitialFundDetails, daoMembers, fundRaiseDetails, setFundRaiseDetails, donateToOrganisation,donateToCampaign}}>{children}</FundRaiseContext.Provider>;
 };

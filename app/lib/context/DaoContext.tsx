@@ -2,11 +2,12 @@
 "use client"
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
+import { CommonKarnaContractSetup } from '@/helpers/commonSetup/CommonActionSetup';
 
 // context type
 interface DaoContextType {
-    approveCampiagn:(id:number)=>void;
-    addMembers:(address:string)=>void;
+    approveCampiagn:(signer:any,id:number)=>void;
+    addMembers:(signer:any,address:string)=>void;
 }
 
 // Creating the context with an initial value
@@ -20,12 +21,31 @@ interface DaoContextProviderProps {
 // provider for the user context
 export const DaoContextProvider: React.FC<DaoContextProviderProps> = ({ children }) => {
     // to approve campaign by the dao members
-    const approveCampiagn=async(id:number)=>{
-        console.log("approve campaign",id);
+    const approveCampiagn=async(signer:any,id:number)=>{
+      try{
+        console.log("aproving proposal",id);
+        const karna_contract=await CommonKarnaContractSetup(signer);
+        console.log("contract from the setup",karna_contract);
+        const respose=await karna_contract?.vote(id);
+      }
+      catch(e)
+      {
+        console.log("the error message is",e);
+      }
     }
+
     // to add members to the dao
-    const addMembers=async(address:string)=>{
+    const addMembers=async(signer:any,address:string)=>{
+      try{
         console.log("add member",address);
+        const karna_contract=await CommonKarnaContractSetup(signer);
+        console.log("contract from the setup",karna_contract);
+        const respose=await karna_contract?.addMember(address);
+      }
+      catch(e)
+      {
+        console.log("the error message is",e);
+      }
     }
   // add all the function here
   return <DaoContext.Provider value={{approveCampiagn, addMembers}}>{children}</DaoContext.Provider>;
