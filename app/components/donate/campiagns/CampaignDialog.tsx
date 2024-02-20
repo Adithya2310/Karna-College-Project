@@ -14,15 +14,17 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { useState } from "react"
 import { useFundRaiseContext } from "@/lib/context/FundraiseContext"
+import { GetTransactionProvider } from "@/helpers/wallet/GetTransactionProvider"
 
-export function CampaignDonations({title}:{title:string}) {
+export function CampaignDonations({title,address,id}:{title:string,address:string,id:number}) {
     const {donateToCampaign}=useFundRaiseContext();
     const [amount, setAmount]=useState<number>(0);
+    const signer=GetTransactionProvider();
     const handleChange=(e:React.ChangeEvent<HTMLInputElement>)=>{
         setAmount(Number(e.target.value));
     }
     const handleSubmit=()=>{
-        donateToCampaign(amount,1);
+        donateToCampaign(signer,amount,address,id);
     }
   return (
     <Dialog>

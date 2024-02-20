@@ -12,7 +12,7 @@ import { CampaignDonations } from "./CampaignDialog"
 import { CampaignCardProps } from "@/lib/types"
 import { FC } from "react"
 
-export const CampaignCard:FC<CampaignCardProps>=({title,description,name,email,donatedAmount,amount})=>{
+export const CampaignCard:FC<CampaignCardProps>=({title,description,name,email,donatedAmount,amount,deployedContractAddress,proposalId})=>{
     return (
         <Card className=" w-96">
           <CardHeader>
@@ -40,6 +40,8 @@ export const CampaignCard:FC<CampaignCardProps>=({title,description,name,email,d
           </CardContent>
           <CardFooter className=" w-full flex justify-end">
             <CampaignDonations
+              id={proposalId}
+              address={deployedContractAddress}
               title={title}
               />
           </CardFooter>

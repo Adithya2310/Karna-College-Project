@@ -15,7 +15,9 @@ const Campaigns = () => {
     </div>
     <div className=" grid grid-cols-1 md:grid-cols-3 mx-auto">
     {
-      fundRaiseDetails.map((fund, index)=>{
+      fundRaiseDetails
+      .filter((fund)=>(fund.approved))
+      .map((fund, index)=>{
         return <CampaignCard
           key={index}
           {...fund}/>

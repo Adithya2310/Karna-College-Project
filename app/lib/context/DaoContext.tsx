@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { CommonKarnaContractSetup } from '@/helpers/commonSetup/CommonActionSetup';
+import { executeCampaign } from '../server/Actions';
 
 // context type
 interface DaoContextType {
@@ -26,7 +27,17 @@ export const DaoContextProvider: React.FC<DaoContextProviderProps> = ({ children
         console.log("aproving proposal",id);
         const karna_contract=await CommonKarnaContractSetup(signer);
         console.log("contract from the setup",karna_contract);
-        const respose=await karna_contract?.vote(id);
+        const tx=await karna_contract?.vote(id);
+        const respose=await tx.wait();
+        const proposal=await karna_contract?.proposals(id);
+        console.log("the resposne is",respose.events[1].args[1]);
+        console.log("the proposal details",proposal);
+        if(proposal[3])
+        {
+          console.log("the resposne is",respose);
+          const address=respose.events[1].args[1];
+          await executeCampaign(id,address);
+        }
       }
       catch(e)
       {

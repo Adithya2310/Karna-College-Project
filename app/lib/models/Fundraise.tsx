@@ -38,6 +38,10 @@ const FundRaiseSchema=new mongoose.Schema({
         required: true,
         default: false
     },
+    deployedContractAddress:{
+        type:String,
+        default:""
+    },
     createdAt:{
         type:Date,
         default:Date.now

@@ -23,5 +23,6 @@ export type CampaignCardProps={
     description: string;
     createdAt: string;
     approved: boolean;
+    deployedContractAddress: string;
 }
 

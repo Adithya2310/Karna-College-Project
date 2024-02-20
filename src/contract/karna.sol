@@ -61,6 +61,7 @@ contract Campaign{
 }
 
 contract Karna {
+
     // Struct to represent a proposal
     struct Proposal {
         string name;
@@ -180,4 +181,5 @@ contract Karna {
     function totalProposals() public view returns(uint256) {
         return proposalCount;
     }
+    
 }

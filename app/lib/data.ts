@@ -1,4 +1,4 @@
-export const KarnaContract="0x97403fd1c3291826Cc0acbe50F879594DbC79996";
+export const KarnaContract="0x6C797CDAdA511E9A67B9eBEA2c91aAE7120b1f62";
 
 export const KarnaAbi=[
 	{

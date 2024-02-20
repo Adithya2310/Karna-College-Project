@@ -2,9 +2,9 @@
 "use client"
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { FundRaiseProps, CampaignCardProps, AddFundRaiseProps } from '../types';
-import { storeFundDetails, getAllFundRaise } from '../server/Actions';
+import { storeFundDetails, donateCampaign  } from '../server/Actions';
 import axios from 'axios';
-import { CommonKarnaContractSetup } from '@/helpers/commonSetup/CommonActionSetup';
+import { CommonKarnaContractSetup,CommonCampaignContractSetup } from '@/helpers/commonSetup/CommonActionSetup';
 import { ethers } from 'ethers';
 
 // context type
@@ -14,7 +14,7 @@ interface FundRaiseContextType {
     fundRaiseDetails: CampaignCardProps[];
     setFundRaiseDetails: React.Dispatch<React.SetStateAction<CampaignCardProps[]>>;
     donateToOrganisation: (amount: number)=>void;
-    donateToCampaign: (amount: number, id: number)=>void;
+    donateToCampaign: (signer:any, amount: number, address: string, id:number)=>void;
 }
 
 // Creating the context with an initial value
@@ -51,7 +51,7 @@ export const FundRaiseContextProvider: React.FC<FundRaiseContextProviderProps> =
   // a fucntion to get the list of dao members from the databse
   const getAllDaoMembers=async ()=>{
     try {
-      setDaoMembers([]);
+      setDaoMembers(["0x60FFC21291D8b169737c40067F0DfeeF4fFD8BF7"]);
     } catch (error) {
       console.log("some error occured", error);
       
@@ -81,12 +81,22 @@ export const FundRaiseContextProvider: React.FC<FundRaiseContextProviderProps> =
   }
 
   // to donate to a campaign
-  const donateToCampaign=(amount:number, id:number)=>{
-    console.log("DONATE TO THE CAMPAIGN INITIATED",amount,id);
+  const donateToCampaign=async (signer:any, amount:number, address: string, id: number)=>{
+    try{
+      console.log("DONATE TO THE CAMPAIGN INITIATED",amount,address);
+      const campaign_contract=await CommonCampaignContractSetup(signer,address);
+      const tx=await campaign_contract?.donate({value: ethers.utils.parseEther(amount.toString())});
+      const respose=await tx.wait(2);
+      await donateCampaign(id,amount);
+    }
+    catch(e)
+    {
+      console.log("there is an error in the donate context",e);
+    }
   }
 
   // add all the function here
-  return <FundRaiseContext.Provider value={{storeInitialFundDetails, daoMembers, fundRaiseDetails, setFundRaiseDetails, donateToOrganisation,donateToCampaign}}>{children}</FundRaiseContext.Provider>;
+  return <FundRaiseContext.Provider value={{storeInitialFundDetails, daoMembers, fundRaiseDetails, setFundRaiseDetails, donateToOrganisation, donateToCampaign}}>{children}</FundRaiseContext.Provider>;
 };
 
 // custom hook for accessing the user context 

@@ -11,3 +11,15 @@ export const CommonKarnaContractSetup=async (signer:any)=>{
         
     }
 }
+
+export const CommonCampaignContractSetup=async (signer:any,contractAddress:string)=>{
+    try{
+        const signerOriginal=await signer.provider.getSigner();
+        const campaign_contract=new ethers.Contract(contractAddress,CampaignAbi,signerOriginal);
+        return campaign_contract;
+    }
+    catch(e)
+    {
+        console.log("error in creating the campaign contract object",e);
+    }
+}
