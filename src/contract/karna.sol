@@ -12,11 +12,12 @@ contract Campaign{
     event DonateEvent(address donor, uint256 amount);
     event WithdrawEvent(uint256 amount);
 
-    constructor(string memory _name, address _proposer, uint256 _amount){
+    constructor(string memory _name, address _proposer, uint256 _amount, uint256 _deadline){
         name = _name;
         proposer = _proposer;
         amount = _amount;
         status = CampaignStatus.OPEN;
+        deadline = _deadline;
     }
 
     // Modifier to check if the withdrawer is the proposal creator
@@ -166,7 +167,7 @@ contract Karna {
     function createDirectProposal(string memory _name, uint256 _amount) public returns(uint256) {
         require(_amount * 1 ether > address(this).balance, 
                 "Karna project has insufficient funds.");
-                
+
         uint proposalId = proposalCount++;
 
         // Initialize a new proposal
@@ -212,7 +213,8 @@ contract Karna {
                 campaigns[campaignId] = new Campaign(
                     proposals[proposalId].name,
                     proposals[proposalId].proposer,
-                    proposals[proposalId].amountInBnb * 1 ether
+                    proposals[proposalId].amountInBnb * 1 ether,
+                    proposals[proposalId].deadline
                 );
                 emit CampaignCreated(proposalId, address(campaigns[campaignId]));
                 proposals[proposalId].campaignId = campaignId;
