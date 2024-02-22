@@ -83,7 +83,7 @@ export function CreateDialog() {
         </div>
         <div className="grid w-full max-w-sm items-center gap-1.5 mt-2">
         <Label htmlFor="radio">Select the type of Fundraise</Label>
-        <RadioGroup defaultValue="campaign" className=" w-full flex gap-12 my-3" onValueChange={handleRadioChange}>
+        <RadioGroup defaultValue={form.type} className=" w-full flex gap-12 my-3" onValueChange={handleRadioChange}>
           <div className="flex items-center space-x-2 w-fit" >
             <RadioGroupItem value="Campaign" id="campaign" />
             <Label htmlFor="campaign">Campaign</Label>

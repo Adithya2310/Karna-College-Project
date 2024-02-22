@@ -13,7 +13,7 @@ interface FundRaiseContextType {
     storeInitialFundDetails: (signer:any,ProductData:AddFundRaiseProps) => void;
     fundRaiseDetails: CampaignCardProps[];
     setFundRaiseDetails: React.Dispatch<React.SetStateAction<CampaignCardProps[]>>;
-    donateToOrganisation: (amount: number)=>void;
+    donateToOrganisation: (signer:any, amount: number)=>void;
     donateToCampaign: (signer:any, amount: number, address: string, id:number)=>void;
 }
 
@@ -64,20 +64,42 @@ export const FundRaiseContextProvider: React.FC<FundRaiseContextProviderProps> =
       console.log("got products in context",ProductData);
       const karna_contract=await CommonKarnaContractSetup(signer);
       console.log("contract from the setup",karna_contract);
-      const tx=await karna_contract?.createProposal(ProductData.title,ethers.utils.parseEther(ProductData.amount.toString()));
-      const respose=await tx.wait();
-      let proposalId=parseInt(respose.events[0].data);
-      console.log("the proposal id is",proposalId);
-      const newProductData:FundRaiseProps={proposalId,...ProductData};
-      storeFundDetails(newProductData); 
+      if(ProductData.type==="Campaign")
+      {
+        const tx=await karna_contract?.createCampaignProposal(ProductData.title,ethers.utils.parseEther(ProductData.amount.toString())); 
+        const respose=await tx.wait();       
+        let proposalId=parseInt(respose.events[0].data);
+        console.log("the proposal id is",proposalId);
+        const newProductData:FundRaiseProps={proposalId,...ProductData};
+        storeFundDetails(newProductData); 
+      }
+      else
+      {
+        const tx=await karna_contract?.createRequestProposal(ProductData.title,ethers.utils.parseEther(ProductData.amount.toString()));
+        const respose=await tx.wait();
+        let proposalId=parseInt(respose.events[0].data);
+        console.log("the proposal id is",proposalId);
+        const newProductData:FundRaiseProps={proposalId,...ProductData};
+        storeFundDetails(newProductData); 
+      }
     } catch (error) {
       console.log("error in the transaction", error);
     }
   }
 
   // a function to donate to the organisation
-  const donateToOrganisation=(amount:number)=>{
-    console.log("DONATE TO THE ORGANISATION INITIATED",amount);
+  const donateToOrganisation=async (signer:any,amount:number)=>{
+    try{
+      console.log("DONATE TO THE ORGANISATION INITIATED",amount);
+      const karna_contract=await CommonKarnaContractSetup(signer);
+      const tx=await karna_contract?.sendMoneyToContract({value: ethers.utils.parseEther(amount.toString())});
+      const respose=await tx.wait();
+      console.log("the response from the transaction",respose);
+    }
+    catch(e)
+    {
+      console.log("error in the transaction",e);
+    }
   }
 
   // to donate to a campaign
@@ -86,7 +108,7 @@ export const FundRaiseContextProvider: React.FC<FundRaiseContextProviderProps> =
       console.log("DONATE TO THE CAMPAIGN INITIATED",amount,address);
       const campaign_contract=await CommonCampaignContractSetup(signer,address);
       const tx=await campaign_contract?.donate({value: ethers.utils.parseEther(amount.toString())});
-      const respose=await tx.wait(2);
+      const respose=await tx.wait();
       await donateCampaign(id,amount);
     }
     catch(e)

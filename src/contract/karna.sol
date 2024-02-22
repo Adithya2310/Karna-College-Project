@@ -2,22 +2,22 @@
 pragma solidity ^ 0.8.0;
 
 contract Campaign{
-    enum CampaignStatus{ OPEN, READY_TO_CLAIM, CLAIMED }
+    
+    enum CampaignStatus{ OPEN, FILLED, CLOSED }
     string public name;
     address public proposer;
     uint256 public amount;
-    uint256 public deadline;
+    uint256 public donatedAmount=0;
     CampaignStatus public status;
 
     event DonateEvent(address donor, uint256 amount);
     event WithdrawEvent(uint256 amount);
 
-    constructor(string memory _name, address _proposer, uint256 _amount, uint256 _deadline){
+    constructor(string memory _name, address _proposer, uint256 _amount){
         name = _name;
         proposer = _proposer;
         amount = _amount;
         status = CampaignStatus.OPEN;
-        deadline = _deadline;
     }
 
     // Modifier to check if the withdrawer is the proposal creator
@@ -28,48 +28,20 @@ contract Campaign{
 
     // Function to donate to campaign
     function donate() public payable {
-        require(status == CampaignStatus.OPEN, "Campaign is not open for donation");
+        require(status != CampaignStatus.CLOSED, "Campaign is closed");
+        require(status != CampaignStatus.FILLED, "Campaign is already filled");
         require(msg.value > 0, "Sent value must be greater than 0");
-
-        uint256 total_amount = address(this).balance + msg.value;
-        require(total_amount <= amount, "Donated amount exceeds the campaign requirement");
-
-        if (total_amount == amount) {
-            status = CampaignStatus.READY_TO_CLAIM;
+        // uint256 total_amount = address(this).balance + msg.value;
+        bool result=payable(proposer).send(msg.value);
+        require(result, "The amount is not donated to the campaign");
+        donatedAmount=donatedAmount+msg.value;
+        if (donatedAmount >= amount) {
+            status = CampaignStatus.FILLED;
         }
-
-        makeCampaignClaimedOnDeadline();
-
         emit DonateEvent(msg.sender, msg.value);
     }
-
-    // Function to withdraw funds from campaign
-    function withdraw() public onlyProposer {
-        makeCampaignClaimedOnDeadline();
-
-        require(status == CampaignStatus.READY_TO_CLAIM, "Cannot be claimed yet.");
-
-        uint256 withdraw_amount = address(this).balance;
-        bool result = payable(proposer).send(withdraw_amount);
-
-        if (result) {
-            status = CampaignStatus.CLAIMED;
-        }
-
-        emit WithdrawEvent(withdraw_amount);
-    }
-
-    // Function to get the total amount donated for the campaign
-    function donatedAmount() public view returns(uint256) {
-        return address(this).balance;
-    }
-
-    function makeCampaignClaimedOnDeadline() private {
-        if (block.timestamp >= deadline) {
-            status = CampaignStatus.READY_TO_CLAIM;
-        }
-    }
 }
+
 
 contract Karna {
 
@@ -79,11 +51,9 @@ contract Karna {
     struct Proposal {
         string name;
         address proposer;
-        uint256 amountInBnb;
-        uint256 deadline;
+        uint256 amount;
         address[] voters;
         bool executed;
-        uint256 campaignId;
         ProposalType proposalType;
     }
 
@@ -91,15 +61,15 @@ contract Karna {
     mapping(uint => Proposal) public proposals;
     uint proposalCount = 0;
     mapping(uint => Campaign) public campaigns;
-    uint campaignCount = 1;
+    uint campaignCount = 0;
 
     event MemberAdded(address member);
     event MemberRemoved(address member);
-    event CampaignProposalCreated(uint id);
-    event DirectRequestProposalCreated(uint id);
-    event ProposalVoted(uint id, address member);
+    event ProposalCreated(uint id);
+    event ProposalVoted(address member);
     event CampaignCreated(uint id, address campaign);
     event DirectRequestFullfilled(uint id);
+
 
     constructor() {
         members.push(msg.sender);
@@ -142,47 +112,41 @@ contract Karna {
         }
     }
 
-    // Function to create campaign proposal
-    function createCampaignProposal(string memory _name, uint256 _durationInSeconds, uint256 _amount) public returns(uint256) {
+    // Function to create a proposal for campaign
+    function createCampaignProposal(string memory _name, uint256 _amount) public returns(uint256) {
         uint proposalId = proposalCount++;
 
         // Initialize a new proposal
         proposals[proposalId] = Proposal({
             name: _name,
-            proposalType: ProposalType.CAMPAIGN,
-            amountInBnb: _amount,
+            amount: _amount/1 ether,
             proposer: msg.sender,
-            deadline: block.timestamp + _durationInSeconds,
             voters: new address[](0),
-            campaignId: 0,
-            executed: false
+            executed: false,
+            proposalType: ProposalType.CAMPAIGN
         });
 
-        emit CampaignProposalCreated(proposalId);
+        emit ProposalCreated(proposalId);
 
         return proposalId;
     }
 
-    // Function to create direct request proposal
-    function createDirectProposal(string memory _name, uint256 _amount) public returns(uint256) {
-        require(_amount * 1 ether > address(this).balance, 
-                "Karna project has insufficient funds.");
-
+    // Function to create a proposal for request
+    function createRequestProposal(string memory _name, uint256 _amount) public returns(uint256) {
+        require(_amount * 1 ether > address(this).balance, "Karna project has insufficient funds.");
         uint proposalId = proposalCount++;
 
         // Initialize a new proposal
         proposals[proposalId] = Proposal({
             name: _name,
-            proposalType: ProposalType.DIRECT_REQUEST,
-            amountInBnb: _amount,
+            amount: _amount / 1 ether,
             proposer: msg.sender,
-            deadline: 0,
             voters: new address[](0),
-            campaignId: 0,
-            executed: false
+            executed: false,
+            proposalType: ProposalType.DIRECT_REQUEST
         });
 
-        emit DirectRequestProposalCreated(proposalId);
+        emit ProposalCreated(proposalId);
 
         return proposalId;
     }
@@ -191,8 +155,6 @@ contract Karna {
     function vote(uint proposalId) public onlyMember {
         // Ensure the proposal index is valid
         require(proposalId < proposalCount, "Invalid proposal index");
-
-        // Ensure proposal is not already executed
         require(!proposals[proposalId].executed, "Proposal already executed");
 
         // Ensure the voter has not already voted for the proposal
@@ -202,36 +164,48 @@ contract Karna {
 
         // Increment add the voter to voted list
         proposals[proposalId].voters.push(msg.sender);
-        emit ProposalVoted(proposalId, msg.sender);
+        emit ProposalVoted(msg.sender);
 
         uint votesRequired = (members.length * 51) / 100;
         if (proposals[proposalId].voters.length >= votesRequired) {
-            if (proposals[proposalId].proposalType == ProposalType.CAMPAIGN) {
+            if(proposals[proposalId].proposalType==ProposalType.CAMPAIGN)
+            {
                 uint campaignId = campaignCount++;
-
                 // Initialize a new campaign
                 campaigns[campaignId] = new Campaign(
                     proposals[proposalId].name,
                     proposals[proposalId].proposer,
-                    proposals[proposalId].amountInBnb * 1 ether,
-                    proposals[proposalId].deadline
-                );
-                emit CampaignCreated(proposalId, address(campaigns[campaignId]));
-                proposals[proposalId].campaignId = campaignId;
-            } else{
-                require(proposals[proposalId].amountInBnb * 1 ether <= address(this).balance,
-                        "Insufficient funds to execute the proposal.");
-                
+                    proposals[proposalId].amount);
+                emit CampaignCreated(campaignId, address(campaigns[campaignId]));
+            }
+            else 
+            {
+                require(proposals[proposalId].amount * 1 ether <= address(this).balance,
+                "Insufficient funds to execute the proposal.");
                 address proposer = proposals[proposalId].proposer;
-                uint256 amount = proposals[proposalId].amountInBnb;
+                uint256 amount = proposals[proposalId].amount;
                 bool result = payable(proposer).send(amount);
 
                 require(result, "Failed to transfer funds directly to proposer.");
 
                 emit DirectRequestFullfilled(proposalId);
+                proposals[proposalId].executed=true;
             }
             proposals[proposalId].executed = true;
+
         }
+    }
+
+    // a function to donate directly to the organisation
+    function sendMoneyToContract() public payable returns (uint256) 
+    {
+        require(msg.value > 0, "Sent value must be greater than 0");
+        return address(this).balance;
+    }
+
+    // Function to get the total number of campaigns created
+    function totalCampaigns() public view returns(uint256) {
+        return campaignCount;
     }
 
     // Function to get the total number of proposals created
