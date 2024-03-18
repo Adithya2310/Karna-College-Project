@@ -1,6 +1,10 @@
 import Image from "next/image";
-import { MdPriceCheck, MdOutlinePercent, MdOutlineLineAxis } from "react-icons/md";
+import { MdPriceCheck, MdOutlinePercent, MdOutlineLineAxis, MdShield } from "react-icons/md";
 import { RiP2PFill } from "react-icons/ri";
+import { FaPeopleRoof } from "react-icons/fa6";
+import { BsFillTriangleFill } from "react-icons/bs";
+import { AiFillLike } from "react-icons/ai";
+import { BiSolidDonateHeart } from "react-icons/bi";
 import { Button } from "@/components/ui/button";
 
 
@@ -12,26 +16,25 @@ export default function Home() {
           <h2 className="text-2xl font-bold mb-5 text-uiprimary">KARNA</h2>
           <h1 className="text-4xl text-black font-extrabold mb-8">Decentralised crowdfunding platform with <br />DAO based verification.</h1>
           <div className="flex gap-2 text-lg justify-center mt-10 mb-7 bg-gray text-[#666362]">
-            <div>
+            <div className=" flex items-center gap-2">
               <span className="text-shadcn-white flex justify-center items-center">
-                <MdPriceCheck size={24} />
-                <span>Price Discovery </span> |
+                <FaPeopleRoof size={24} /> <span>DAO Mechanism</span> |
               </span>
             </div>
-            <div>
+            <div className=" flex items-center gap-2">
               <span className="text-shadcn-white flex justify-center items-center">
-                <RiP2PFill /> Peer to Peer |
+                <AiFillLike size={24}/> Social Network |
               </span>
             </div>
-            <div>
+            <div className=" flex items-center gap-2">
               <span className="text-shadcn-white flex items-center justify-center">
                 {" "}
-                <MdOutlinePercent /> Zero Commission |
+                <BiSolidDonateHeart size={24} /> Direct Donation |
               </span>
             </div>
-            <div>
+            <div className=" flex items-center gap-2">
               <span className="text-shadcn-white  flex  items-center justify-center">
-                <MdOutlinePercent/> No Human Interaction
+                <MdShield size={24} /> No Human Intervention
               </span>
             </div>
           </div>
