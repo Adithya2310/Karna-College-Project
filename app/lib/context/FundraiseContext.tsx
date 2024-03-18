@@ -5,6 +5,7 @@ import { storeFundDetails, donateCampaign  } from '../server/Actions';
 import axios from 'axios';
 import { CommonKarnaContractSetup,CommonCampaignContractSetup } from '@/helpers/commonSetup/CommonActionSetup';
 import { ethers } from 'ethers';
+import { useToast } from '@/components/ui/use-toast';
 
 // context type
 interface FundRaiseContextType {
@@ -26,6 +27,8 @@ interface FundRaiseContextProviderProps {
 
 // provider for the user context
 export const FundRaiseContextProvider: React.FC<FundRaiseContextProviderProps> = ({ children }) => {
+  // adding the toaster element
+  const {toast}=useToast();
   // to store all the dao members
   const [daoMembers, setDaoMembers] = useState<string[]>([]);
   // to store all the funds from the database
@@ -81,8 +84,17 @@ export const FundRaiseContextProvider: React.FC<FundRaiseContextProviderProps> =
         const newProductData:FundRaiseProps={proposalId,...ProductData};
         storeFundDetails(newProductData); 
       }
+      toast({
+        title: "Success",
+        description: "Transaction Executed Sucessfully",
+      });
     } catch (error) {
       console.log("error in the transaction", error);
+      toast({
+        variant: "destructive",
+        title: "Try Again",
+        description: "Sorry the transaction failed",
+      });
     }
   }
 
@@ -94,10 +106,19 @@ export const FundRaiseContextProvider: React.FC<FundRaiseContextProviderProps> =
       const tx=await karna_contract?.sendMoneyToContract({value: ethers.utils.parseEther(amount.toString())});
       const respose=await tx.wait();
       console.log("the response from the transaction",respose);
+      toast({
+        title: "Success",
+        description: "Donated Sucessfully to the Organisation",
+      });
     }
     catch(e)
     {
       console.log("error in the transaction",e);
+      toast({
+        variant: "destructive",
+        title: "Try Again",
+        description: "Sorry the transaction failed",
+      });
     }
   }
 
@@ -109,10 +130,19 @@ export const FundRaiseContextProvider: React.FC<FundRaiseContextProviderProps> =
       const tx=await campaign_contract?.donate({value: ethers.utils.parseEther(amount.toString())});
       const respose=await tx.wait();
       await donateCampaign(id,amount);
+      toast({
+        title: "Success",
+        description: "Donated Sucessfully to the organisation",
+      });
     }
     catch(e)
     {
       console.log("there is an error in the donate context",e);
+      toast({
+        variant: "destructive",
+        title: "Try Again",
+        description: "Sorry the transaction failed",
+      });
     }
   }
 

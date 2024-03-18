@@ -5,6 +5,7 @@ import { Providers } from "./providers/Providers";
 import { Navbar } from "@/components/shared/navbar/Navbar";
 import { FundRaiseContextProvider } from "@/lib/context/FundraiseContext";
 import { DaoContextProvider } from "@/lib/context/DaoContext";
+import { Toaster } from "@/components/ui/toaster";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -25,7 +26,7 @@ export default function RootLayout({
             <FundRaiseContextProvider>
             <Navbar />
               {children}
-              {/* <Toaster /> */}
+              <Toaster />
             </FundRaiseContextProvider>
           </DaoContextProvider>
         </Providers>

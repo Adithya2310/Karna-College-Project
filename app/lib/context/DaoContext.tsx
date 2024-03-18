@@ -4,7 +4,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { CommonKarnaContractSetup } from '@/helpers/commonSetup/CommonActionSetup';
 import { executeCampaign } from '../server/Actions';
-
+import { useToast } from '@/components/ui/use-toast';
 // context type
 interface DaoContextType {
     approveCampiagn:(signer:any,id:number)=>void;
@@ -21,6 +21,8 @@ interface DaoContextProviderProps {
 
 // provider for the user context
 export const DaoContextProvider: React.FC<DaoContextProviderProps> = ({ children }) => {
+    // adding the toaster element
+    const {toast}=useToast();
     // to approve campaign by the dao members
     const approveCampiagn=async(signer:any,id:number)=>{
       try{
@@ -38,9 +40,18 @@ export const DaoContextProvider: React.FC<DaoContextProviderProps> = ({ children
           const address=respose.events[1].args[1];
           await executeCampaign(id,address);
         }
+        toast({
+          title: "Success",
+          description: "Campaign Approved sucessfully",
+        });
       }
       catch(e)
       {
+        toast({
+          variant: "destructive",
+          title: "Try Again",
+          description: "Sorry the transaction failed",
+        });
         console.log("the error message is",e);
       }
     }
@@ -52,10 +63,19 @@ export const DaoContextProvider: React.FC<DaoContextProviderProps> = ({ children
         const karna_contract=await CommonKarnaContractSetup(signer);
         console.log("contract from the setup",karna_contract);
         const respose=await karna_contract?.addMember(address);
+        toast({
+          title: "Success",
+          description: "Member Added Successfully",
+        });
       }
       catch(e)
       {
         console.log("the error message is",e);
+        toast({
+          variant: "destructive",
+          title: "Try Again",
+          description: "Sorry the transaction failed",
+        });
       }
     }
   // add all the function here
