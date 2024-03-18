@@ -2,12 +2,12 @@
 pragma solidity ^ 0.8.0;
 
 contract Campaign{
-    
+
     enum CampaignStatus{ OPEN, FILLED, CLOSED }
     string public name;
     address public proposer;
     uint256 public amount;
-    uint256 public donatedAmount=0;
+    uint256 public donatedAmount;
     CampaignStatus public status;
 
     event DonateEvent(address donor, uint256 amount);
@@ -18,6 +18,7 @@ contract Campaign{
         proposer = _proposer;
         amount = _amount;
         status = CampaignStatus.OPEN;
+        donatedAmount=0;
     }
 
     // Modifier to check if the withdrawer is the proposal creator
@@ -43,8 +44,9 @@ contract Campaign{
 }
 
 
-contract Karna {
 
+contract Karna {
+    
     enum ProposalType{ DIRECT_REQUEST, CAMPAIGN }
 
     // Struct to represent a proposal
@@ -119,7 +121,7 @@ contract Karna {
         // Initialize a new proposal
         proposals[proposalId] = Proposal({
             name: _name,
-            amount: _amount/1 ether,
+            amount: _amount,
             proposer: msg.sender,
             voters: new address[](0),
             executed: false,
@@ -133,13 +135,13 @@ contract Karna {
 
     // Function to create a proposal for request
     function createRequestProposal(string memory _name, uint256 _amount) public returns(uint256) {
-        require(_amount * 1 ether > address(this).balance, "Karna project has insufficient funds.");
+        require(_amount <= address(this).balance, "Karna project has insufficient funds.");
         uint proposalId = proposalCount++;
 
         // Initialize a new proposal
         proposals[proposalId] = Proposal({
             name: _name,
-            amount: _amount / 1 ether,
+            amount: _amount,
             proposer: msg.sender,
             voters: new address[](0),
             executed: false,
@@ -175,13 +177,14 @@ contract Karna {
                 campaigns[campaignId] = new Campaign(
                     proposals[proposalId].name,
                     proposals[proposalId].proposer,
-                    proposals[proposalId].amount);
+                    proposals[proposalId].amount
+                );
                 emit CampaignCreated(campaignId, address(campaigns[campaignId]));
             }
             else 
             {
-                require(proposals[proposalId].amount * 1 ether <= address(this).balance,
-                "Insufficient funds to execute the proposal.");
+                require(proposals[proposalId].amount <= address(this).balance,
+                        "Insufficient funds to execute the proposal.");
                 address proposer = proposals[proposalId].proposer;
                 uint256 amount = proposals[proposalId].amount;
                 bool result = payable(proposer).send(amount);
@@ -192,7 +195,6 @@ contract Karna {
                 proposals[proposalId].executed=true;
             }
             proposals[proposalId].executed = true;
-
         }
     }
 

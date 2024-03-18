@@ -16,6 +16,6 @@ export const GetSupportedChainsForWagmi = () => {
   if (process.env.NEXT_PUBLIC_ISPRODUCTION == "true") {
     return [bsc];
   } else {
-    return [bscTestnet];
+    return [bscTestnet,mainnet];
   }
 };
