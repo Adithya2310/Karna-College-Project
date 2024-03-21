@@ -13,6 +13,7 @@ import { CampaignCardProps } from "@/lib/types";
 import { Button } from "../ui/button";
 import { useDaoContext } from "@/lib/context/DaoContext";
 import { GetTransactionProvider } from "@/helpers/wallet/GetTransactionProvider";
+import Link from "next/link";
 
 const ApproveTable:FC<{data:CampaignCardProps[]}> = ({data}) => {
   const {approveCampiagn}=useDaoContext();
@@ -31,6 +32,7 @@ const ApproveTable:FC<{data:CampaignCardProps[]}> = ({data}) => {
               <TableHead className="w-[100px]">Title</TableHead>
               <TableHead>Amount</TableHead>
               <TableHead>Description</TableHead>
+              <TableHead>DocumentLink</TableHead>
               <TableHead className="text-right">Status</TableHead>
             </TableRow>
           </TableHeader>
@@ -40,6 +42,7 @@ const ApproveTable:FC<{data:CampaignCardProps[]}> = ({data}) => {
                 <TableCell className="font-medium">{data.title}</TableCell>
                 <TableCell>{data.amount}</TableCell>
                 <TableCell>{data.description}</TableCell>
+                <TableCell><Link href={data.driveLink}><Button variant={"primary"}>Open</Button></Link></TableCell>
                 <TableCell className="text-right"><Button onClick={()=>handleClick(data.proposalId)}>Approve</Button></TableCell>
               </TableRow>
             ))}

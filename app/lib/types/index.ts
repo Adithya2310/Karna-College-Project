@@ -8,10 +8,11 @@ export type AddFundRaiseProps={
     description: string;
     driveLink: string;
     endDate: Date|undefined;
+    cover: string;
 }
 
 export type FundRaiseProps=AddFundRaiseProps&{
-        proposalId:number
+    proposalId:number
 }
 
 export type CampaignCardProps={
@@ -26,6 +27,8 @@ export type CampaignCardProps={
     createdAt: string;
     approved: boolean;
     deployedContractAddress: string;
+    driveLink: string;
     endDate: Date;
+    cover: string;
 }
 

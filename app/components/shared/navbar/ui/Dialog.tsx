@@ -27,10 +27,11 @@ import { CalendarIcon } from "@radix-ui/react-icons"
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { convertToBase64 } from "@/lib/utils";
 
 export function CreateDialog() {
-  const {storeInitialFundDetails}=useFundRaiseContext();
+  const { storeInitialFundDetails }=useFundRaiseContext();
   const signer=GetTransactionProvider();
 
   const [form, setForm]= useState<AddFundRaiseProps>({
@@ -41,24 +42,25 @@ export function CreateDialog() {
     amount: 0,
     description: '',
     driveLink:'',
-    endDate: undefined
+    endDate: undefined,
+    cover: ''
   });
 
-  const handleChange=(e:React.ChangeEvent<HTMLInputElement|HTMLTextAreaElement>)=>{
+  const handleChange=(e: React.ChangeEvent<HTMLInputElement|HTMLTextAreaElement>)=>{
     setForm({
       ...form,
       [e.target.name]:e.target.value
     });
   }
 
-  const handleRadioChange=(type:string)=>{
+  const handleRadioChange=(type: string)=>{
     setForm({
       ...form,
       type:type
     });
   }
 
-  const handleDateChange=(date:Date|undefined)=>{
+  const handleDateChange=(date: Date|undefined)=>{
     if(date)
     {
       setForm({
@@ -68,10 +70,20 @@ export function CreateDialog() {
     }
   }
 
-  const handleSubmit=(e:React.FormEvent)=>{
+  const handleSubmit=(e: React.FormEvent)=>{
     e.preventDefault();
     console.log("Form Submitted",form);
     storeInitialFundDetails(signer,form);
+  }
+
+  const handleFileUpload = async (e: any) => {
+    const file = e.target.files[0];
+    const base64 = await convertToBase64(file);
+    console.log(base64)
+    setForm({
+      ...form,
+      cover: base64 as string
+    });
   }
 
   return (
@@ -119,34 +131,40 @@ export function CreateDialog() {
         </RadioGroup>
         </div>
         {form.type==="Campaign" && (
-                  <div className="grid w-full max-w-sm items-center gap-1.5">
-                  <Label htmlFor="endDate" className=" py-1">EndDate</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant={"outline"}
-                        className={cn(
-                          "w-[240px] justify-start text-left font-normal",
-                          !form.endDate && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {form.endDate ? format(form.endDate, "PPP") : <span>Pick your end date</span>}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={form.endDate}
-                        onSelect={handleDateChange}
-                        disabled={(date) =>
-                          date < new Date()
-                        }
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
+          <>
+            <div className="grid w-full max-w-sm items-center gap-1.5">
+              <Label htmlFor="endDate" className=" py-1">EndDate</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    className={cn(
+                      "w-[240px] justify-start text-left font-normal",
+                      !form.endDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {form.endDate ? format(form.endDate, "PPP") : <span>Pick your end date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={form.endDate}
+                    onSelect={handleDateChange}
+                    disabled={(date) =>
+                      date < new Date()
+                    }
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div className="grid w-full max-w-sm items-center gap-1.5">
+              <Label htmlFor="cover">Cover Image</Label>
+              <Input type="file" name="cover" id='cover' accept='.jpeg, .png, .jpg' onChange={(e) => handleFileUpload(e)}/>
+            </div>
+          </>
         )
         }
         <div className="grid w-full max-w-sm items-center gap-1.5">

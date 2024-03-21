@@ -11,10 +11,11 @@ import { Button } from "../../ui/button"
 import { CampaignDonations } from "./CampaignDialog"
 import { CampaignCardProps } from "@/lib/types"
 import { FC } from "react"
+import Image from "next/image"
 
-export const CampaignCard:FC<CampaignCardProps>=({title,description,name,email,donatedAmount,amount,deployedContractAddress,proposalId,endDate})=>{
+export const CampaignCard:FC<CampaignCardProps>=({title,description,name,email,donatedAmount,amount,deployedContractAddress,proposalId,endDate,cover})=>{
     return (
-      <Card className=" w-96">
+      <Card className=" w-[20rem]">
       <div className=" flex items-center justify-between pr-2">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
@@ -23,6 +24,14 @@ export const CampaignCard:FC<CampaignCardProps>=({title,description,name,email,d
       {/* add something after the heading */}
       </div>
       <CardContent>
+        <div className=" flex items-center justify-center mb-3">
+        <Image
+          className=" w-[18rem] h-[16rem]"
+          src={cover}
+          alt="campaign cover"
+          height={200}
+          width={400}></Image>
+        </div>
         <div className=" flex justify-between">
           <div className=" mb-3">
             <h3 className=" text-sm text-muted-foreground">Created By</h3>
